@@ -72,5 +72,6 @@ expr ::= expr:e1 PLUS expr:e2
         |
          expr:e1 DIV expr:e2
             {: RESULT = e1.intValue()/e2.intValue(); :}
+        | MOINS expr:e {: RESULT = 0 - e.intValue(); :}
         | ENTIER:n  {: RESULT = n; :}
         | PAR_G expr:e PAR_D {: RESULT = e; :};
