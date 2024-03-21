@@ -58,19 +58,19 @@ precedence left MUL, DIV;
 
 seq_expressions ::= expression seq_expressions | expression ;
 
-expression ::= expr:e {:  System.out.println("Eval="+e.intValue()); :} POINT_VIRGULE |
+expression ::= expr:e {:  System.out.println("Eval = "+e.intValue()); :} POINT_VIRGULE |
                         error POINT_VIRGULE ;
 
 expr ::= expr:e1 PLUS expr:e2
-            {: RESULT = new Integer(e1.intValue()+e2.intValue()); :}
+            {: RESULT = e1.intValue()+e2.intValue(); :}
         |
          expr:e1 MOINS expr:e2
-            {: RESULT = new Integer(e1.intValue()-e2.intValue()); :}
+            {: RESULT = e1.intValue()-e2.intValue(); :}
         |
          expr:e1 MUL expr:e2
-            {: RESULT = new Integer(e1.intValue()*e2.intValue()); :}
+            {: RESULT = e1.intValue()*e2.intValue(); :}
         |
          expr:e1 DIV expr:e2
-            {: RESULT = new Integer(e1.intValue()/e2.intValue()); :}
+            {: RESULT = e1.intValue()/e2.intValue(); :}
         | ENTIER:n  {: RESULT = n; :}
         | PAR_G expr:e PAR_D {: RESULT = e; :};
