@@ -1,0 +1,76 @@
+/* package et imports */
+package fr.usmb.m1isc.compilation.simple;
+import java_cup.runtime.Symbol;
+
+// nom de la classe a generer
+class SimpleParser;
+
+/* inclusion de code */
+
+action code {: 
+    // pour utilisation dans les actions (classe action)
+:};
+
+
+parser code {:
+    // pour le parser (redefinition de la methode reportant les erreurs d'analyse)
+    public void report_error(String message, Object info) {
+        String m = "";
+        if (info instanceof java_cup.runtime.Symbol) {
+            Symbol s = ((Symbol) info);
+            if (s.left >= 0) {
+                /* Ajoute le numero de ligne  */
+                m = m + "Ligne " + (s.left+1) + " ";
+            }
+            if (s.right >= 0) {
+                /* Ajoute le numero de colonne  */
+                m = m + "Colonne " + (s.right+1) + " ";
+            }
+            if (s.left >=0  || s.right >= 0) {
+                m = m + ": ";
+            }
+        }
+        m = m + "Erreur de syntaxe";
+        System.out.println(m);
+    }
+:};
+
+init with {:
+    //    initialisation du parser
+:};
+
+/* declarations (terminaux, non-terminaux, etc.) */
+
+/* symboles terminaux */
+terminal PLUS, MOINS, MUL, DIV, MOD, PAR_G, PAR_D, POINT_VIRGULE;
+terminal Integer ENTIER;
+terminal ERROR;
+
+/* non terminaux */
+non terminal seq_expressions , expression;
+non terminal Integer expr;
+
+/* Precedences */
+precedence left PLUS, MOINS;
+precedence left MUL, DIV;
+
+/* grammaire */
+
+seq_expressions ::= expression seq_expressions | expression ;
+
+expression ::= expr:e {:  System.out.println("Eval="+e.intValue()); :} POINT_VIRGULE |
+                        error POINT_VIRGULE ;
+
+expr ::= expr:e1 PLUS expr:e2
+            {: RESULT = new Integer(e1.intValue()+e2.intValue()); :}
+        |
+         expr:e1 MOINS expr:e2
+            {: RESULT = new Integer(e1.intValue()-e2.intValue()); :}
+        |
+         expr:e1 MUL expr:e2
+            {: RESULT = new Integer(e1.intValue()*e2.intValue()); :}
+        |
+         expr:e1 DIV expr:e2
+            {: RESULT = new Integer(e1.intValue()/e2.intValue()); :}
+        | ENTIER:n  {: RESULT = n; :}
+        | PAR_G expr:e PAR_D {: RESULT = e; :};

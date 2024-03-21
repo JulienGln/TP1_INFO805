@@ -1,0 +1,22 @@
+image: gradle:7.4.1-jdk11
+stages:
+  - build
+  - check
+  
+build:
+  stage: build
+  script:
+    - gradle build
+
+checksource:
+  stage: check
+  script:
+    - gradle sonarqube
+                    -Dsonar.host.url=$SONAR_URL -Dsonar.login=$SONAR_TOKEN 
+                    -Dsonar.projectKey=$CI_PROJECT_NAME -Dsonar.projectName=$CI_PROJECT_NAME 
+                    -Dsonar.gitlab.url=$GITLAB_URL -Dsonar.gitlab.user_token=$SONAR_PLUGIN_TOKEN 
+                    -Dsonar.gitlab.project_id=$CI_PROJECT_ID -Dsonar.gitlab.ref_name=$CI_COMMIT_REF_NAME -Dsonar.gitlab.commit_sha=$CI_COMMIT_SHA 
+#                    -Dsonar.branch.name=$CI_COMMIT_REF_NAME
+  only:
+    variables: 
+      - $SONAR_ANALYSIS == "enabled" 

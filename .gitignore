@@ -1,0 +1,36 @@
+/.gradle/
+/bin/
+/build/
+/out/
+/**/generated-*
+# Eclipse configuration
+/.settings/
+/.classpath
+/.project
+/.externalToolBuilders/
+# IntelliJ configuration 
+# see https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
+# IntelliJ User-specific stuff
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries
+.idea/**/shelf
+# IntelliJ Generated files
+.idea/**/contentModel.xml
+# IntelliJ 4 gradle 
+.idea/**/gradle.xml
+.idea/**/libraries
+# IntelliJ auto-import (gradle/maven)
+.idea/artifacts
+.idea/compiler.xml
+.idea/jarRepositories.xml
+.idea/modules.xml
+.idea/*.iml
+.idea/modules
+*.iml
+*.ipr
+*.iws
+# IntelliJ SonarLint plugin
+.idea/sonarlint/
+

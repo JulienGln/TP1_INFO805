@@ -1,0 +1,10 @@
+pluginManagement {
+    repositories {
+        maven {
+          url 'https://gitlab.com/api/v4/projects/35519225/packages/maven'
+        }
+        gradlePluginPortal()
+    }
+}
+
+rootProject.name = 'TP1_INFO805'
