@@ -1,46 +1,61 @@
-# Exemple minimaliste de d'analyseur syntaxique avec JFlex et Cup
+# TP Compilation « l'évaluateur »
 
-Il s'agit ici de faire un analyseur syntaxique 
-pour reconnaitre des séquences des phrases simples 
-du type `<sujet> <verbe> <complement> <point>`.
+## TP Compilation : Evaluateur d'expressions arithmétiques infixes
 
+L'objectif du TP est de se familiariser avec les outils JFlex et CUP.
 
-[JFlex](https://jflex.de/) 
-est utilisé pour la génération de l'analyseur lexical.
+### Exercice 1 : 
 
-[Cup](http://www2.cs.tum.edu/projects/cup/) pour la génération de l'analyseur syntaxique.
+Ecrire un évaluateur d'expressions arithmétiques infixes sur les nombres entiers. 
+Vous devez écrire l'analyseur lexical avec JFlex et l'analyseur syntaxique avec CUP.
 
-## Analyseur lexical
+Exemple de fichier source de l'évaluateur : 
 
-La spécification de l'analyseur lexical est dans le fichier [src/main/jflex/Simple.jflex](src/main/jflex/Simple.jflex).
+```
+12 + 5; 		/* ceci est un commentaire */
+10 / 2 - 3;  99; 	/* le point-virgule sépare les expressions à évaluer */
+/* l'évaluation donne toujours un nombre entier */
+((30 * 1) + 4) mod 2;	/* cinq opérateurs binaires */
+erreur + 5;		/* il peut avoir des erreurs */
+8 / 0 + 6;		/* erreur, on doit pouvoir continuer */
+3 + * 5;		/* encore erreur */
+3 * -4;			/* notez l'opérateur unaire */
+5 +
+4; /* expression sur plus d'une ligne */
+```
 
-Il permet de reconnaître un **sujet** (_il_ ou _elle_), 
-un **verbe** (_est_ ou _boit_), un **complément** 
-(_vite_, _bien_, _chaud_, _beau_, _belle_) ou un **point** (_.;!?_).
+A propos l'opérateur unaire `-`, vous trouverez [ici un exemple](http://www2.cs.tum.edu/projects/cup/docs.php#cpp) 
+de déclaration de précédence et d'utilisation dans une règle de production. 
 
-À partir de cette spécification, JFlex génère le fichier java, 
-`build/generated/sources/jflex/main/java/fr/usmb/m1isc/compilation/simple/SimpleLexer.java` 
-qui contient l'analyseur lexical utilisé en entrée 
-de l'analyseur syntaxique.
+Liens utiles :  
+- JFlex : http://www.jflex.de  
+- CUP : http://www2.cs.tum.edu/projects/cup  
+- CUP User's Manual : http://www2.cs.tum.edu/projects/cup/docs.php
 
-## Analyseur syntaxique
+### Exercice 2 :
 
-La spécification de l'analyseur syntaxique est dans le fichier [src/main/cup/Simple.cup](src/main/cup/Simple.cup).
+Une extension utile à votre évaluateur consiste à accepter des variables précédement déclarées, dans les expression. 
+Modifier votre analyseur lexicale et syntaxique pour tenir compte de cette extension.
 
-À partir de cette spécification, GNU Bison génère les fichiers, 
-`build/generated/sources/cup/main/java/fr/usmb/m1isc/compilation/simple/SimpleParser.java` (contient l'analyseur syntaxique) et 
-`build/generated/sources/cup/main/java/fr/usmb/m1isc/compilation/simple/SimpleParserSym.java` 
-(utilisé dans l'analyseur lexical pour renvoyer 
-les tokens (unités lexicales) attendus par l'analyseur syntaxique).
+Exemple de source de l'évaluateur : 
 
-## Construction du projet 
+```
+let prixHt = 200; /* déclaration et initialisation */
+let prixTtc =  prixHt * 119 / 100;
+-prixTtc + 100;  /* unaire qui précéde une variable */
+14 / x;          /* erreur */
+5 # + 2;         /* erreur, il faut le signaler */
+10 * 3;          // reste ligne est commentaire
+5;
+/* fin */
+``` 
 
-Pour construire le projet (nécessite l'installation d'une JDK), 
-aller dans le dossier du projet puis exécuter 
-la commande `./gradelw build` ou `gradelw.bat build`. 
+### Remarques sur CUP
 
-
-
-
-
- 
+- Pour déclarer certaines variables (par exemple une Hashtable pour les symboles) dans votre analyseur, vous devez inclure ces déclaration dans un "bloc" `action code {: ... :};` . Similaire au "bloc" `parser code {: ... :};` Voir une explication dans : http://www2.cs.tum.edu/projects/cup/docs.php#code_part
+- Pour traiter les erreurs de logique (division par zéro ou variable non déclarée) vous pouvez soit :
+    1. déclarer des variables qui garderont l'état de l'analyse à un moment donnée. Il faut donc affecter des valeurs à ces variables en cas d'erreur et vérifier leur valeur par la suite.
+    2. une meilleure solution consiste à déclarer (dans le fichier .cup) le symbole expr ayant comme valeur un type (une classe à déclarer, par exemple Texpr) différent d'Integer. Dans cette classe vous pouvez déclarer, en plus d'un attribut valeur, les attributs nécessaires pour signaler une situation d'erreur.
+- Dernier point. Vous pouvez, dans CUP, accéder aux valeurs *left* et *right* de Symbole à travers les variables (génerées par CUP) `xxxleft` et `xxxright` où xxx est le "label" du symbole.  
+Exemple :  
+`expression ::= bla1 bla2 POINT_VIRGULE:pv {: System.out.println("ligne : "+pvleft;) :}`
